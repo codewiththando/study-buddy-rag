@@ -37,7 +37,7 @@ def call_llm(system: str, user_message: str) -> str:
         contents=user_message,
         config=types.GenerateContentConfig(
             system_instruction=system,
-            max_output_tokens=800,
+            max_output_tokens=2048,
         ),
     )
     return response.text
