@@ -1,0 +1,219 @@
+[
+  {
+    "question": "What are the two modes of operation a CPU runs in, and which mode does the operating system itself use?",
+    "source": "mos4.pdf",
+    "pages": [
+      32,
+      33
+    ]
+  },
+  {
+    "question": "What kind of information does the OS store for each process so it can be restarted later?",
+    "source": "mos4.pdf",
+    "pages": [
+      70,
+      125
+    ]
+  },
+  {
+    "question": "How does a microkernel design make an operating system more reliable?",
+    "source": "mos4.pdf",
+    "pages": [
+      97,
+      98
+    ]
+  },
+  {
+    "question": "What is a race condition?",
+    "source": "mos4.pdf",
+    "pages": [
+      151,
+      152
+    ]
+  },
+  {
+    "question": "How does Peterson's solution let two processes take turns entering a critical region?",
+    "source": "mos4.pdf",
+    "pages": [
+      155,
+      156
+    ]
+  },
+  {
+    "question": "What do the down and up operations do on a semaphore?",
+    "source": "mos4.pdf",
+    "pages": [
+      161,
+      162
+    ]
+  },
+  {
+    "question": "What is the priority inversion problem?",
+    "source": "mos4.pdf",
+    "pages": [
+      158,
+      159
+    ]
+  },
+  {
+    "question": "How does round-robin scheduling work, and what is a quantum?",
+    "source": "mos4.pdf",
+    "pages": [
+      189,
+      190
+    ]
+  },
+  {
+    "question": "When is shortest job first scheduling optimal?",
+    "source": "mos4.pdf",
+    "pages": [
+      188,
+      189
+    ]
+  },
+  {
+    "question": "What is the dining philosophers problem?",
+    "source": "mos4.pdf",
+    "pages": [
+      198,
+      199
+    ]
+  },
+  {
+    "question": "What four conditions must all hold for a resource deadlock to occur?",
+    "source": "mos4.pdf",
+    "pages": [
+      471
+    ]
+  },
+  {
+    "question": "What is the ostrich algorithm for handling deadlocks?",
+    "source": "mos4.pdf",
+    "pages": [
+      474
+    ]
+  },
+  {
+    "question": "What does it mean for a system state to be safe in deadlock avoidance?",
+    "source": "mos4.pdf",
+    "pages": [
+      483
+    ]
+  },
+  {
+    "question": "How does the banker's algorithm decide whether to grant a resource request?",
+    "source": "mos4.pdf",
+    "pages": [
+      484,
+      485
+    ]
+  },
+  {
+    "question": "What is a TLB and why does a paging system use one?",
+    "source": "mos4.pdf",
+    "pages": [
+      233,
+      234
+    ]
+  },
+  {
+    "question": "How does an inverted page table differ from a normal page table?",
+    "source": "mos4.pdf",
+    "pages": [
+      238,
+      239
+    ]
+  },
+  {
+    "question": "How does the second chance page replacement algorithm treat a page whose R bit is set?",
+    "source": "mos4.pdf",
+    "pages": [
+      243
+    ]
+  },
+  {
+    "question": "What is a process's working set?",
+    "source": "mos4.pdf",
+    "pages": [
+      247
+    ]
+  },
+  {
+    "question": "What is thrashing in a virtual memory system?",
+    "source": "mos4.pdf",
+    "pages": [
+      247
+    ]
+  },
+  {
+    "question": "Why does a smaller page size waste less memory?",
+    "source": "mos4.pdf",
+    "pages": [
+      257
+    ]
+  },
+  {
+    "question": "What does an i-node contain and how does it help find a file's disk blocks?",
+    "source": "mos4.pdf",
+    "pages": [
+      317,
+      318,
+      355,
+      356
+    ]
+  },
+  {
+    "question": "Why is DMA useful compared with having the CPU copy data from a device itself?",
+    "source": "mos4.pdf",
+    "pages": [
+      375,
+      376
+    ]
+  },
+  {
+    "question": "How does the elevator algorithm order pending disk requests?",
+    "source": "mos4.pdf",
+    "pages": [
+      411
+    ]
+  },
+  {
+    "question": "How does RAID level 0 spread data across disks?",
+    "source": "mos4.pdf",
+    "pages": [
+      403,
+      404
+    ]
+  },
+  {
+    "question": "What is the optimal page replacement algorithm and why can't it be implemented?",
+    "source": "mos4.pdf",
+    "pages": [
+      240
+    ]
+  },
+  {
+    "question": "What are the R and M bits used for in the not recently used page replacement algorithm?",
+    "source": "mos4.pdf",
+    "pages": [
+      241
+    ]
+  },
+  {
+    "question": "How does contiguous allocation store a file on disk?",
+    "source": "mos4.pdf",
+    "pages": [
+      313
+    ]
+  },
+  {
+    "question": "What is spooling?",
+    "source": "mos4.pdf",
+    "pages": [
+      43,
+      398,
+      399
+      
+    ]
+  }
+]

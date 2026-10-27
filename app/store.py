@@ -1,23 +1,33 @@
-"""Embed chunks into a local Chroma database and search them by meaning."""
+"""Embed chunks into a local Chroma database and search them.
 
+Three search modes: "semantic" (embeddings), "keyword" (BM25), "hybrid" (both, merged).
+"""
+
+import re
 import sys
 from pathlib import Path
 
 import chromadb
+from rank_bm25 import BM25Okapi
 
 from app.ingest import ingest_pdf
 
 DB_PATH = "chroma_db"          # folder created in the repo root (gitignored)
 COLLECTION_NAME = "notes"
 BATCH_SIZE = 100
+CANDIDATES = 20                # results each method contributes before merging
+RRF_K = 60                     # standard constant for reciprocal rank fusion
+
+STOPWORDS = set(
+    "a an the is are was were be of in on at to for and or what how why when "
+    "does do did it its this that with as by from can".split()
+)
+
+_bm25_cache = {"count": None, "bm25": None, "chunks": None}
 
 
 def get_collection():
-    """Open (or create) the persistent collection.
-
-    Chroma's default embedding model (all-MiniLM-L6-v2) runs locally.
-    It downloads once (~80 MB) the first time you add or search.
-    """
+    """Open (or create) the persistent collection."""
     client = chromadb.PersistentClient(path=DB_PATH)
     return client.get_or_create_collection(name=COLLECTION_NAME)
 
@@ -41,24 +51,79 @@ def add_pdf(pdf_path: str) -> int:
     return len(chunks)
 
 
-def search(question: str, k: int = 4) -> list[dict]:
-    """Return the k chunks most similar in meaning to the question."""
+def tokenize(text: str) -> list[str]:
+    """Lowercase words with common filler words removed."""
+    return [w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in STOPWORDS]
+
+
+def _keyword_index(collection):
+    """Build (and cache) a BM25 index over every stored chunk."""
+    count = collection.count()
+    if _bm25_cache["count"] != count:
+        data = collection.get(include=["documents", "metadatas"])
+        chunks = [
+            {"id": i, "text": d, "page": m["page"], "source": m["source"]}
+            for i, d, m in zip(data["ids"], data["documents"], data["metadatas"])
+        ]
+        _bm25_cache["count"] = count
+        _bm25_cache["chunks"] = chunks
+        _bm25_cache["bm25"] = BM25Okapi([tokenize(c["text"]) for c in chunks])
+    return _bm25_cache["bm25"], _bm25_cache["chunks"]
+
+
+def semantic_search(question: str, k: int = 4) -> list[dict]:
+    """Chunks closest in meaning to the question (embedding search)."""
     collection = get_collection()
     result = collection.query(query_texts=[question], n_results=k)
-
     hits = []
-    for text, meta, dist in zip(
-        result["documents"][0], result["metadatas"][0], result["distances"][0]
+    for id_, text, meta, dist in zip(
+        result["ids"][0], result["documents"][0],
+        result["metadatas"][0], result["distances"][0],
     ):
         hits.append(
-            {
-                "text": text,
-                "page": meta["page"],
-                "source": meta["source"],
-                "distance": dist,  # lower = more similar
-            }
+            {"id": id_, "text": text, "page": meta["page"],
+             "source": meta["source"], "distance": dist}  # lower = more similar
         )
     return hits
+
+
+def keyword_search(question: str, k: int = 4) -> list[dict]:
+    """Chunks that best match the question's exact words (BM25)."""
+    collection = get_collection()
+    if collection.count() == 0:
+        return []
+    bm25, chunks = _keyword_index(collection)
+    scores = bm25.get_scores(tokenize(question))
+    top = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
+    return [dict(chunks[i], distance=float("nan")) for i in top if scores[i] > 0]
+
+
+def hybrid_search(question: str, k: int = 4) -> list[dict]:
+    """Merge semantic and keyword rankings with reciprocal rank fusion."""
+    semantic = semantic_search(question, CANDIDATES)
+    keyword = keyword_search(question, CANDIDATES)
+    distances = {h["id"]: h["distance"] for h in semantic}
+
+    fused = {}
+    for ranking in (semantic, keyword):
+        for rank, hit in enumerate(ranking, start=1):
+            entry = fused.setdefault(hit["id"], {**hit, "score": 0.0})
+            entry["score"] += 1.0 / (RRF_K + rank)
+
+    for id_, entry in fused.items():
+        entry["distance"] = distances.get(id_, float("nan"))
+
+    ranked = sorted(fused.values(), key=lambda h: h["score"], reverse=True)
+    return ranked[:k]
+
+
+def search(question: str, k: int = 4, mode: str = "hybrid") -> list[dict]:
+    """Search the stored notes. mode: "hybrid" (default), "semantic", or "keyword"."""
+    if mode == "semantic":
+        return semantic_search(question, k)
+    if mode == "keyword":
+        return keyword_search(question, k)
+    return hybrid_search(question, k)
 
 
 if __name__ == "__main__":
