@@ -18,3 +18,5 @@ the page it came from, so you can verify it instead of trusting it blindly.
 
 ## Tech stack
 Python · FastAPI · ChromaDB · [LLM provider] · Streamlit/React
+
+I wrote these 28 questions by reading the book, so they share a lot of vocabulary with it. That favours keyword search. Real students phrase things differently, for example “why does my computer crawl when it runs out of RAM?” instead of “what is thrashing?”. Also, 28 questions is a small sample, and one question changes a score by about 3.6 points, so small differences between modes may be noise.
