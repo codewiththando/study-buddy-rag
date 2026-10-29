@@ -1,0 +1,10 @@
+   streamlit
+   pypdf
+   chromadb
+   rank-bm25
+   google-genai
+   python-dotenv
+   fastapi
+   uvicorn
+   python-multipart
+   requests
